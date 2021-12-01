@@ -1,8 +1,3 @@
-/**
- * Authors: Fr3nchk1ss
- * Date: 10/2021
- */
- 
 module coordinate;
 
 struct Coordinate
@@ -14,6 +9,7 @@ struct Coordinate
         assert ( 0 <= x && 0 <= y);
     }
 
+
     bool opEquals(const Coordinate c)
     {
         return x == c.x && y == c.y;
@@ -23,11 +19,7 @@ struct Coordinate
         assert( Coordinate(123, 456) == Coordinate(123, 456), "Coordinate opEquals does not yield expected result!");
     }
 
-    /**
-     * Perform addition and substraction
-     *
-     * Returns: the result of the binary operation
-     */
+
     Coordinate opBinary(string op)(const Coordinate rhs)
     {
         static if (op == "+")
