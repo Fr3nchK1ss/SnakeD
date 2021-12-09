@@ -8,14 +8,17 @@ module ground;
 import core.sys.windows.windows;
 import std.conv;
 
-import source.coordinate;
-import source.game;
-import source.snake;
-/*
+import coordinate;
 import snake;
-*/
+import winconsole;
 
 
+/**
+ * Ground class
+ *
+ * The ground is represented by a 2d array whose first dimension is Y, not X.
+ * This is because reading a console is like reading a book, starting up-left and going down line by line
+ */
 class Ground
 {
     static immutable WALL = -2;
@@ -23,42 +26,60 @@ class Ground
     static immutable NOTHING = 0;
     static immutable FOOD = 1;
 
+    static immutable maxSide = 100;
+    static immutable playgroundWidth = 77;
+    static immutable playgroundHeight = 22;
+
+    invariant
+    {
+        assert(playgroundWidth <= maxSide && playgroundHeight <= maxSide);
+    }
+
     this()
     {
         ground = 0; // as of D2, we can not initialize matrix arrays in class body
 
-        for (int i = 0; i <= Game.playgroundWidth+1; ++i)
+        for (int i = 0; i <= playgroundWidth+1; ++i)
         {
             //top & bottom wall
             ground[0][i] = WALL;
-            ground[Game.playgroundHeight + 1][i] = WALL;
+            ground[playgroundHeight + 1][i] = WALL;
         }
 
-        for (int i = 0; i <= Game.playgroundHeight+1; ++i)
+        for (int i = 0; i <= playgroundHeight+1; ++i)
         {
             //right & left wall
             ground[i][0] = WALL;
-            ground[i][Game.playgroundWidth + 1] = WALL;
+            ground[i][playgroundWidth + 1] = WALL;
         }
     }
 
+    Coordinate playgroundCenter()
+    {
+        return Coordinate(playgroundWidth/2, playgroundHeight/2);
+    }
+
+    int getFoodCounter() { return foodCounter; }
+
 
     /**
-     * Place a food token randomly on the playground
+     * Put a food token on the playground at random
      */
-    void updateFoodToken()
+    void updateFoodToken(ref WinConsole console)
     {
+        import std.random;
+
         int x, y;
         do
         {
-            x = 3% Game.playgroundWidth + 1;
-            y = 3% Game.playgroundHeight + 1;
+            x = uniform(1, playgroundWidth);
+            y = uniform(1, playgroundHeight);
         } while (ground[y][x] != NOTHING);
 
         ground[y][x] = FOOD;
-        //foodCounter++;
-        //goto(x,y)
-        // cout << "\u2022";
+        foodCounter++;
+        console.gotoxy(x,y);
+        console.writeln("\u2022");
     }
 
 
@@ -73,6 +94,7 @@ class Ground
 
 
 private:
-    int[Game.maxSide][Game.maxSide] ground;
+    int foodCounter = 0;
+    int[maxSide][maxSide] ground;
 
 }

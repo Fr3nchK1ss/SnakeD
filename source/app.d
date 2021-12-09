@@ -12,14 +12,11 @@ import std.uni;
 // Windows
 import core.sys.windows.windows;
 
-import source.winconsole;
-import source.ground;
-import source.snake;
-/*
+
 import winconsole;
 import ground;
 import snake;
-*/
+
 
 
 int main(string[] args)
@@ -28,11 +25,12 @@ int main(string[] args)
 
     WinConsole console = new WinConsole;
     Ground ground = new Ground;
-    Snake snake = new Snake;
+    Snake snake = new Snake(ground.playgroundCenter);
 
     // Let the ground know the snake's position
     ground.setSnakePosition(snake);
-    ground.updateFoodToken();
+    ground.updateFoodToken(console);
+
 
 
 

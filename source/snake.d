@@ -8,24 +8,17 @@ module snake;
 import core.sys.windows.windows;
 import std.conv;
 
-import source.coordinate;
-import source.game;
-/*
 import coordinate;
-import ground;
-*/
+
 enum Direction { RIGHT, LEFT, UP, DOWN };
 
 
-/**
- * The ground
- */
 class Snake
 {
-    this()
+    this(Coordinate center)
     {
-        body[0].x = Game.playgroundWidth/2;
-        body[0].y = Game.playgroundHeight/2;
+		body.length = 4;
+        body[0] = center;
 
         // Draw the body
         for (int i = 1; i < length; ++i)
@@ -44,15 +37,7 @@ class Snake
         return body[bodySegment];
     }
 
-    int getFoodCounter()
-    {
-        return foodCounter;
-    }
-
-    int getLength()
-    {
-        return length;
-    }
+    int getLength() { return length; }
 
 
     /**
@@ -60,7 +45,7 @@ class Snake
      */
     void updateBody(int delay)
     {
-        Coordinate[Game.playgroundWidth*Game.playgroundHeight] previous;
+        Coordinate[] previous;
         for(int i = 0; i < length; ++i)
             previous[i] = body[i];
 
@@ -68,18 +53,14 @@ class Snake
 
     }
 
-/+
-    void firstDraw();
-+/
+
 private:
+    int direction = Direction.init;
     int length = 4;
-    // Ground.playgroundWidth*Ground.playgroundHeight is the max body length
-    Coordinate[Game.playgroundWidth*Game.playgroundHeight] body;
-    Coordinate[4] unitMotion = [{1,0} /*RIGHT*/,
+    Coordinate[] body;
+    Coordinate[4] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,
                                 {0,-1} /*UP*/,
-                                {0,1} /*DOWN*/];
-    int direction = Direction.init;
-    int foodCounter = 0;
+                                {0,1}  /*DOWN*/];
 
 }
