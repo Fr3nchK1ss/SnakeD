@@ -8,7 +8,9 @@ module snake;
 import core.sys.windows.windows;
 import std.conv;
 
+
 import coordinate;
+import ground;
 
 enum Direction { RIGHT, LEFT, UP, DOWN };
 
@@ -17,7 +19,7 @@ class Snake
 {
     this(Coordinate center)
     {
-		body.length = 4;
+		body.length = length;
         body[0] = center;
 
         // Draw the body
@@ -36,6 +38,7 @@ class Snake
     {
         return body[bodySegment];
     }
+
 
     int getLength() { return length; }
 

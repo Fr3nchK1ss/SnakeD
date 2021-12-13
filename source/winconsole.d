@@ -11,20 +11,22 @@ module winconsole;
 import core.sys.windows.windows;
 import std.conv;
 
+import console;
+
 
 /**
  * Handle writing and reading in a Windows console, moving to x/y, etc.
  */
-class WinConsole
+class WinConsole : Console
 {
-    // this detects if the output is a console, or something else.
-    private bool isConsole(int fd)
+    override protected bool isConsole(int fd)
     {
         auto hConsole = GetStdHandle(fd == 0 ? STD_INPUT_HANDLE : STD_OUTPUT_HANDLE);
         return GetFileType(hConsole) == FILE_TYPE_CHAR;
     }
 
-    string readln()
+
+    override string readln()
     {
         if(isConsole(0))
         {
@@ -76,7 +78,7 @@ class WinConsole
     }
 
 
-    void writeln(string s)
+    override void writeln(string s)
     {
         // again, it is important to branch on output
         // being the console or redirected.
@@ -112,7 +114,7 @@ class WinConsole
     }
 
 
-    void clearScreen()
+    override void clearScreen()
     {
         HANDLE hStdOut;
         CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -155,7 +157,7 @@ class WinConsole
     /**
      * Move the cursor to coordinates x y
      */
-    bool gotoxy(int column, int row)
+    override bool gotoxy(int column, int row)
     {
         HANDLE hStdOut;
         COORD coord;

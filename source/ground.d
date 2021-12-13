@@ -10,6 +10,7 @@ import std.conv;
 
 import coordinate;
 import snake;
+import console;
 import winconsole;
 
 
@@ -18,6 +19,8 @@ import winconsole;
  *
  * The ground is represented by a 2d array whose first dimension is Y, not X.
  * This is because reading a console is like reading a book, starting up-left and going down line by line
+ *
+ * Inside the ground array is the playground. Inside the playground the snake and food tokens to catch.
  */
 class Ground
 {
@@ -54,10 +57,12 @@ class Ground
         }
     }
 
+
     Coordinate playgroundCenter()
     {
         return Coordinate(playgroundWidth/2, playgroundHeight/2);
     }
+
 
     int getFoodCounter() { return foodCounter; }
 
@@ -78,6 +83,7 @@ class Ground
 
         ground[y][x] = FOOD;
         foodCounter++;
+
         console.gotoxy(x,y);
         console.writeln("\u2022");
     }

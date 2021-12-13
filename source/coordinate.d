@@ -3,7 +3,7 @@
  * Date: 11/2021
  */
 
- module coordinate;
+module coordinate;
 
 
 struct Coordinate
