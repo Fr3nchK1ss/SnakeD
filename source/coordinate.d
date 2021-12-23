@@ -22,7 +22,7 @@ struct Coordinate
     }
     unittest
     {
-        assert( Coordinate(123, 456) != Coordinate(123, 456), "Coordinate opEquals does not yield expected result!");
+        assert( Coordinate(123, 456) == Coordinate(123, 456), "Coordinate opEquals does not yield expected result!");
         assert( Coordinate(123, 456) != Coordinate(1, 456), "Coordinate opEquals does not yield expected result!");
     }
 

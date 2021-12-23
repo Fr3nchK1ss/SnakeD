@@ -19,18 +19,19 @@ class Snake
 {
     this(Coordinate center)
     {
-		body.length = length;
+		body.length = 4;
         body[0] = center;
 
         // Draw the body
-        for (int i = 1; i < length; ++i)
+        for (int i = 1; i < body.length; ++i)
             body[i] = body[i-1] - unitMotion[direction];
 
     }
     unittest
     {
-        Snake s = new Snake;
-        assert(s.length == 4 && s.foodCounter == 0 && s.direction == Direction.init);
+		Ground g = new Ground();
+        Snake s = new Snake(g.playgroundCenter);
+        assert(s.length == 4 && s.direction == Direction.init);
     }
 
 
@@ -40,7 +41,7 @@ class Snake
     }
 
 
-    int getLength() { return length; }
+    ulong length() { return body.length; }
 
 
     /**
@@ -61,7 +62,6 @@ class Snake
 
 private:
     int direction = Direction.init;
-    int length = 4;
     Coordinate[] body;
     Coordinate[4] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,

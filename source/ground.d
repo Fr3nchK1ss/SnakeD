@@ -91,7 +91,7 @@ class Ground
 
     void setSnakePosition(Snake snk)
     {
-        for (int i = 0; i < snk.getLength; ++i)
+        for (int i = 0; i < snk.length; ++i)
         {
             Coordinate segmentCoord = snk(i);
             ground[segmentCoord.y][segmentCoord.x] = SNAKE; // TODO: verify array order in Dlang
