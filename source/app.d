@@ -16,28 +16,31 @@ import ground;
 import snake;
 
 
+/**
+ * Simulate a first round to initialize the game
+ */
 void firstRound()
 {
 	
 }
 
 
-int main(string[] args)
+int main()
 {
-    int delay = 50;
+    immutable delay = 50;
 
-	version(Windows)
-	{
-		import winconsole;
-		WinConsole console = new WinConsole;
-	}
-	else version(linux)
-	{
-		import nixconsole;
-		NixConsole console = new NixConsole;
-	}
-	else
-		static assert(0, "OS not supported!");
+    version(Windows)
+    {
+        import winconsole;
+        WinConsole console = new WinConsole;
+    }
+    else version(linux)
+    {
+        import nixconsole;
+        NixConsole console = new NixConsole;
+    }
+    else
+        static assert(0, "OS not supported!");
 
     Ground ground = new Ground;
     Snake snake = new Snake(ground.playgroundCenter);
@@ -46,9 +49,15 @@ int main(string[] args)
     ground.setSnakePosition(snake);
     ground.updateFoodToken(console);
 
+    // make a thread to fetch user input
+    // while (true)
+    //   if ( delay passed )
+    //     if (user input)
+    //       move snake in given direction
+    //     else
+    //       keep moving in same direction
 
-
-	return 0;
+    return 0;
 }
 
 

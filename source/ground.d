@@ -23,14 +23,14 @@ import iconsole;
  */
 class Ground
 {
-    static immutable WALL = -2;
-    static immutable SNAKE = -1;
-    static immutable EMPTY = 0;
-    static immutable FOOD = 1;
+    static immutable WALL = -2; /// used in the ground array to indicate a wall
+    static immutable SNAKE = -1; /// ditto
+    static immutable EMPTY = 0; /// ditto
+    static immutable FOOD = 1; /// ditto
 
-    static immutable maxSide = 100;
-    static immutable playgroundWidth = 77;
-    static immutable playgroundHeight = 22;
+    static immutable maxSide = 100; /// maximum height / width of the ground
+    static immutable playgroundWidth = 77; /// playground is the part of the ground where the snake can move
+    static immutable playgroundHeight = 22; /// ditto
 
     invariant
     {
@@ -57,12 +57,20 @@ class Ground
     }
 
 
+    /**
+     * Return the center of the playground
+     * UFCS name
+     */
     Coordinate playgroundCenter()
     {
         return Coordinate(playgroundWidth/2, playgroundHeight/2);
     }
 
 
+    /**
+     * Return the number of food tokens consumed minus one
+     * UFCS name
+     */
     int foodCount() { return foodCounter; }
 
 

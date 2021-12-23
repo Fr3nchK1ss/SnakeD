@@ -12,6 +12,7 @@ import std.conv;
 import coordinate;
 import ground;
 
+/// Direction is to be used with unitMotion
 enum Direction { RIGHT, LEFT, UP, DOWN };
 
 
@@ -19,7 +20,7 @@ class Snake
 {
     this(Coordinate center)
     {
-		body.length = 4;
+        body.length = 4;
         body[0] = center;
 
         // Draw the body
@@ -29,33 +30,40 @@ class Snake
     }
     unittest
     {
-		Ground g = new Ground();
+        Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         assert(s.length == 4 && s.direction == Direction.init);
     }
 
 
+    /**
+     * Implemented so that snake(i) returns the coordinate body[i]
+     */
     Coordinate opCall(int bodySegment)
     {
         return body[bodySegment];
     }
 
 
+    /**
+     * Getter for length
+     * Universal Function Call Syntax
+     */
     ulong length() { return body.length; }
 
 
     /**
-     * ?
+     * Update body according to user input
      */
     void updateBody(int delay)
     {
         Coordinate[] previous = body[];
 
-		// update head
+        // update head
         body[0] = body[0] + unitMotion[direction];
-		
-		// update remaining body
-		body[1..$] = previous[0..$-1];
+    	
+        // update remaining body
+        body[1..$] = previous[0..$-1];
 
     }
 

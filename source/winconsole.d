@@ -21,6 +21,9 @@ version(Windows)
  */
 class WinConsole : IConsole
 {
+    /**
+     * See IConsole for description
+     */
     bool isConsole(int fd)
     {
         auto hConsole = GetStdHandle(fd == 0 ? STD_INPUT_HANDLE : STD_OUTPUT_HANDLE);
@@ -28,6 +31,9 @@ class WinConsole : IConsole
     }
 
 
+    /**
+     * See IConsole for description
+     */
     string readln()
     {
         if(isConsole(0))
@@ -80,6 +86,9 @@ class WinConsole : IConsole
     }
 
 
+    /**
+     * See IConsole for description
+     */
     void writeln(string s)
     {
         // again, it is important to branch on output
@@ -116,6 +125,9 @@ class WinConsole : IConsole
     }
 
 
+    /**
+     * See IConsole for description
+     */
     void clearScreen()
     {
         HANDLE hStdOut;
@@ -156,8 +168,9 @@ class WinConsole : IConsole
         SetConsoleCursorPosition(hStdOut, homeCoords);
     }
 
+
     /**
-     * Move the cursor to coordinates x y
+     * See IConsole for description
      */
     bool gotoxy(int column, int row)
     {
