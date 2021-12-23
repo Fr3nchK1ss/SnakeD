@@ -13,6 +13,8 @@ import std.conv;
 
 import iconsole;
 
+version(Windows)
+{
 
 /**
  * Handle writing and reading in a Windows console, moving to x/y, etc.
@@ -189,3 +191,4 @@ class WinConsole : IConsole
 +/
 }
 
+} // version

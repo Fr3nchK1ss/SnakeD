@@ -48,11 +48,13 @@ class Snake
      */
     void updateBody(int delay)
     {
-        Coordinate[] previous;
-        for(int i = 0; i < length; ++i)
-            previous[i] = body[i];
+        Coordinate[] previous = body[];
 
-        //if (input != )
+		// update head
+        body[0] = body[0] + unitMotion[direction];
+		
+		// update remaining body
+		body[1..$] = previous[0..$-1];
 
     }
 

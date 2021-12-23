@@ -16,6 +16,12 @@ import ground;
 import snake;
 
 
+void firstRound()
+{
+	
+}
+
+
 int main(string[] args)
 {
     int delay = 50;
