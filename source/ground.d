@@ -10,8 +10,7 @@ import std.conv;
 
 import coordinate;
 import snake;
-import console;
-import winconsole;
+import iconsole;
 
 
 /**
@@ -26,7 +25,7 @@ class Ground
 {
     static immutable WALL = -2;
     static immutable SNAKE = -1;
-    static immutable NOTHING = 0;
+    static immutable EMPTY = 0;
     static immutable FOOD = 1;
 
     static immutable maxSide = 100;
@@ -64,13 +63,13 @@ class Ground
     }
 
 
-    int getFoodCounter() { return foodCounter; }
+    int foodCount() { return foodCounter; }
 
 
     /**
      * Put a food token on the playground at random
      */
-    void updateFoodToken(ref WinConsole console)
+    void updateFoodToken(IConsole console)
     {
         import std.random;
 
@@ -79,7 +78,8 @@ class Ground
         {
             x = uniform(1, playgroundWidth);
             y = uniform(1, playgroundHeight);
-        } while (ground[y][x] != NOTHING);
+
+        } while (ground[y][x] != EMPTY);
 
         ground[y][x] = FOOD;
         foodCounter++;

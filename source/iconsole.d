@@ -3,15 +3,15 @@
  * Date: 12/2021
  */
 
-module console;
+module iconsole;
 
 
-abstract class Console
+interface IConsole
 {
     /**
      * Detects if the output is a console, or something else.
      */
-    protected bool isConsole(int fd);
+    bool isConsole(int fd);
     /**
      * Read a line
      */
