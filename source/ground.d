@@ -79,21 +79,21 @@ class Ground
      */
     void setSnakePosition(Snake snk)
     {
-        foreach (Coordinate cell; snk)
+        foreach (Coordinate snkCell; snk)
         {
-            ground[cell.x][cell.y] = SNAKE;
+            ground[snkCell.x][snkCell.y] = SNAKE;
         }
     }
     unittest
     {
+        import std.stdio;
+        writeln("** Ground setSnakePosition unittest **");
+
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         g.setSnakePosition(s);
         assert(g.ground[g.playgroundCenter.x][g.playgroundCenter.y] == SNAKE);
-
         /+
-        import std.stdio;
-        writeln("** Ground setSnakePosition unittest **");
         for( int x = 0; x < playgroundWidth; ++x)
             for(int y = 0; y < playgroundHeight; ++y)
                 if ( g.ground[x][y] == SNAKE )

@@ -20,7 +20,7 @@ class Snake
 {
     this(Coordinate center)
     {
-        body.length = 4;
+        body = new Coordinate[4];
         body[0] = center;
 
         // Draw the starting body
@@ -30,12 +30,13 @@ class Snake
     }
     unittest
     {
+        import std.stdio;
+        writeln("** Snake ctor unittest **");
+
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         assert(s.length == 4 && s.direction == Direction.init);
         /+
-        import std.stdio;
-        writeln("** Snake ctor unittest **");
         foreach_reverse (cell; s.body)
             writeln(cell);
         +/
