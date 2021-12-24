@@ -16,8 +16,7 @@ import iconsole;
 /**
  * Ground class
  *
- * The ground is represented by a 2d array whose first dimension is Y, not X.
- * This is because reading a console is like reading a book, starting up-left and going down line by line
+ * The ground is represented by a 2d array
  *
  * Inside the ground array is the playground. Inside the playground the snake and food tokens to catch.
  */
@@ -45,15 +44,15 @@ class Ground
         for (int i = 0; i <= playgroundWidth+1; ++i)
         {
             //top & bottom wall
-            ground[0][i] = WALL;
-            ground[playgroundHeight + 1][i] = WALL;
+            ground[i][0] = WALL;
+            ground[i][playgroundHeight + 1] = WALL;
         }
 
         for (int i = 0; i <= playgroundHeight+1; ++i)
         {
             //right & left wall
-            ground[i][0] = WALL;
-            ground[i][playgroundWidth + 1] = WALL;
+            ground[0][i] = WALL;
+            ground[playgroundWidth + 1][i] = WALL;
         }
     }
 
@@ -75,17 +74,14 @@ class Ground
     int foodCount() { return foodCounter; }
 
 
+    /**
+     * Register the position of the snake on the playground
+     */
     void setSnakePosition(Snake snk)
-    {/*
-        for (int i = 0; i < snk.length; ++i)
-        {
-            Coordinate cellCoord = snk(i);
-            ground[cellCoord.y][cellCoord.x] = SNAKE;
-        }
-*/
+    {
         foreach (Coordinate cell; snk)
         {
-            ground[cell.y][cell.x] = SNAKE;
+            ground[cell.x][cell.y] = SNAKE;
         }
     }
     unittest
@@ -93,22 +89,21 @@ class Ground
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         g.setSnakePosition(s);
+        assert(g.ground[g.playgroundCenter.x][g.playgroundCenter.y] == SNAKE);
 
+        /+
         import std.stdio;
-        writeln("Ground setSnakePosition unittest");
-        for(int y = 0; y < playgroundHeight; ++y)
-        {
-            for( int x = 0; x < playgroundWidth; ++x)
-            {
-                if ( g.ground[y][x] == SNAKE )
-                    writeln("snake cell at Coordinate(", x, ",", y, ")");
-            }
-        }
+        writeln("** Ground setSnakePosition unittest **");
+        for( int x = 0; x < playgroundWidth; ++x)
+            for(int y = 0; y < playgroundHeight; ++y)
+                if ( g.ground[x][y] == SNAKE )
+                    writeln("snake cell at (", x, ",", y, ")");
+        +/
     }
 
 
     /**
-     * Put a food token on the playground at random
+     * Put a food token at random on the playground
      */
     void updateFoodToken(IConsole console)
     {
@@ -120,9 +115,9 @@ class Ground
             x = uniform(1, playgroundWidth);
             y = uniform(1, playgroundHeight);
 
-        } while (ground[y][x] != EMPTY);
+        } while (ground[x][y] != EMPTY);
 
-        ground[y][x] = FOOD;
+        ground[x][y] = FOOD;
         foodCounter++;
 
         console.gotoxy(x,y);
@@ -133,6 +128,6 @@ class Ground
 
 private:
     int foodCounter = 0;
-    int[maxSide][maxSide] ground; /// usage: ground[line][column]
+    int[maxSide][maxSide] ground; /// usage: ground[column][line]
 
 }

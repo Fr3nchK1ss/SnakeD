@@ -33,16 +33,20 @@ class Snake
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         assert(s.length == 4 && s.direction == Direction.init);
-
+        /+
         import std.stdio;
-        writeln("Snake ctor unittest");
-        for( int i = 0; i < s.length; ++i)
-            writeln(s(i));
+        writeln("** Snake ctor unittest **");
+        foreach_reverse (cell; s.body)
+            writeln(cell);
+        +/
     }
 
 
     /**
      * Make the expression "foreach (cell; snake)" possible
+     *
+     * Basic boilerplate code for opApply
+     * The body of a foreach becomes the special delegate "dg"
      */
     int opApply( int delegate(Coordinate) dg) const
     {
