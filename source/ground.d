@@ -1,5 +1,6 @@
 /**
- * Authors: ThePoorEngineer, Fr3nchk1ss
+ * Authors: Fr3nchk1ss
+ * Inspired by https://thepoorengineer.com/en/snake-cplusplus/
  * Date: 10/2021
  */
 
@@ -10,7 +11,7 @@ import std.conv;
 
 import coordinate;
 import snake;
-import iconsole;
+public import arsd.terminal;
 
 
 /**
@@ -105,7 +106,7 @@ class Ground
     /**
      * Put a food token at random on the playground
      */
-    void updateFoodToken(IConsole console)
+    void updateFoodToken(ref Terminal terminal)
     {
         import std.random;
 
@@ -120,11 +121,9 @@ class Ground
         ground[x][y] = FOOD;
         foodCounter++;
 
-        console.gotoxy(x,y);
-        console.writeln("\u2022");
+        terminal.moveTo(x,y);
+        terminal.writeln("\u2022");
     }
-
-
 
 private:
     int foodCounter = 0;

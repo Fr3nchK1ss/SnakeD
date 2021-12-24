@@ -1,9 +1,12 @@
 {
-	"authors": [
-		"Fr3nchK1ss"
-	],
-	"copyright": "Copyright © 2021, Fr3nchK1ss",
-	"description": "A snake game to demo D contract programming",
-	"license": "LGPL",
-	"name": "snaked"
+  "authors" : [
+    "Fr3nchK1ss"
+  ],
+  "copyright" : "Copyright © 2021, Fr3nchK1ss",
+  "description" : "A snake game to demo D contract programming",
+  "license" : "LGPL",
+  "name" : "snaked",
+  "dependencies" :{
+    "arsd-official:terminal": "~>10.4.5"
+  }
 }

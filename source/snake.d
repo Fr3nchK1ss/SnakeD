@@ -1,5 +1,6 @@
 /**
- * Authors: ThePoorEngineer, Fr3nchk1ss
+ * Authors: Fr3nchk1ss
+ * Inspired by https://thepoorengineer.com/en/snake-cplusplus/
  * Date: 10/2021
  */
 
