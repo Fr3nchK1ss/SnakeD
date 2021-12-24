@@ -30,6 +30,7 @@ int main()
 	immutable delay = 50;
 	// Using https://code.dlang.org/packages/arsd-official%3Aterminal
 	auto terminal = Terminal(ConsoleOutputType.linear);
+	auto input = RealTimeConsoleInput(&terminal, ConsoleInputFlags.raw);
 
 	Ground ground = new Ground;
 	Snake snake = new Snake(ground.playgroundCenter);
@@ -39,7 +40,20 @@ int main()
 	ground.updateFoodToken(terminal);
 
 
-	// while (true)
+	//while (true)
+	//{
+		auto ch = input.getch();
+
+		switch (ch)
+		{
+			case KeyboardEvent.Key.UpArrow:
+				terminal.writeln("you pressed up");
+				break;
+			default:
+				break;
+		}
+
+	//}
 	//   if ( delay passed )
 	//     if (user input)
 	//       move snake in given direction
