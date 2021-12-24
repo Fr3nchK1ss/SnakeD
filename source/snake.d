@@ -23,7 +23,7 @@ class Snake
         body.length = 4;
         body[0] = center;
 
-        // Draw the body
+        // Draw the starting body
         for (int i = 1; i < body.length; ++i)
             body[i] = body[i-1] - unitMotion[direction];
 
@@ -33,6 +33,29 @@ class Snake
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         assert(s.length == 4 && s.direction == Direction.init);
+
+        import std.stdio;
+        writeln("Snake ctor unittest");
+        for( int i = 0; i < s.length; ++i)
+            writeln(s(i));
+    }
+
+
+    /**
+     * Make the expression "foreach (cell; snake)" possible
+     */
+    int opApply( int delegate(Coordinate) dg) const
+    {
+        int result;
+        foreach (cell; body)
+        {
+            result = dg(cell);
+
+            if (result)
+                break;
+        }
+
+        return result;
     }
 
 
@@ -70,7 +93,7 @@ class Snake
 
 private:
     int direction = Direction.init;
-    Coordinate[] body;
+    Coordinate[] body; /// The body of the snake is a continuous line of cells
     Coordinate[4] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,
                                 {0,-1} /*UP*/,

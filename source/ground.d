@@ -37,6 +37,7 @@ class Ground
         assert(playgroundWidth <= maxSide && playgroundHeight <= maxSide);
     }
 
+
     this()
     {
         ground = 0; // as of D2, we can not initialize matrix arrays in class body
@@ -74,6 +75,38 @@ class Ground
     int foodCount() { return foodCounter; }
 
 
+    void setSnakePosition(Snake snk)
+    {/*
+        for (int i = 0; i < snk.length; ++i)
+        {
+            Coordinate cellCoord = snk(i);
+            ground[cellCoord.y][cellCoord.x] = SNAKE;
+        }
+*/
+        foreach (Coordinate cell; snk)
+        {
+            ground[cell.y][cell.x] = SNAKE;
+        }
+    }
+    unittest
+    {
+        Ground g = new Ground();
+        Snake s = new Snake(g.playgroundCenter);
+        g.setSnakePosition(s);
+
+        import std.stdio;
+        writeln("Ground setSnakePosition unittest");
+        for(int y = 0; y < playgroundHeight; ++y)
+        {
+            for( int x = 0; x < playgroundWidth; ++x)
+            {
+                if ( g.ground[y][x] == SNAKE )
+                    writeln("snake cell at Coordinate(", x, ",", y, ")");
+            }
+        }
+    }
+
+
     /**
      * Put a food token on the playground at random
      */
@@ -97,18 +130,9 @@ class Ground
     }
 
 
-    void setSnakePosition(Snake snk)
-    {
-        for (int i = 0; i < snk.length; ++i)
-        {
-            Coordinate segmentCoord = snk(i);
-            ground[segmentCoord.y][segmentCoord.x] = SNAKE; // TODO: verify array order in Dlang
-        }
-    }
-
 
 private:
     int foodCounter = 0;
-    int[maxSide][maxSide] ground;
+    int[maxSide][maxSide] ground; /// usage: ground[line][column]
 
 }
