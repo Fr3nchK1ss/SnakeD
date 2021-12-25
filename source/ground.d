@@ -92,7 +92,7 @@ class Ground
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
         g.setSnakePosition(s);
-        assert(g.ground[g.playgroundCenter.x][g.playgroundCenter.y] == SNAKE);
+        assert(g.ground[g.playgroundCenter.x][g.playgroundCenter.y] == SNAKE_HEAD);
         /+
         for( int x = 0; x < playgroundWidth; ++x)
             for(int y = 0; y < playgroundHeight; ++y)
