@@ -6,20 +6,31 @@
 
 module snake;
 
-import core.sys.windows.windows;
 import std.conv;
-
 
 import coordinate;
 import ground;
 
+
 /// Direction is to be used with unitMotion
-enum Direction { RIGHT, LEFT, UP, DOWN };
+enum Direction { RIGHT, LEFT, UP, DOWN, UNDEFINED}
 
 
 class Snake
 {
+    invariant
+    {
+        assert(body[0].x >= 0 && body[0].x < Ground.playgroundWidth);
+        assert(body[0].y >= 0 && body[0].y < Ground.playgroundHeight);
+    }
+
+
     this(Coordinate center)
+    out {
+        // The new snake must fit in the playground
+        assert(body.length <= Ground.playgroundWidth/2 - 1);
+    }
+    do
     {
         body = new Coordinate[4];
         body[0] = center;
@@ -36,7 +47,7 @@ class Snake
 
         Ground g = new Ground();
         Snake s = new Snake(g.playgroundCenter);
-        assert(s.length == 4 && s.direction == Direction.init);
+        assert(s.body.length == 4 && s.direction == Direction.RIGHT);
         /+
         foreach_reverse (cell; s.body)
             writeln(cell);
@@ -66,19 +77,9 @@ class Snake
 
 
     /**
-     * Implemented so that snake(i) returns the coordinate body[i]
+     * UFCS name
      */
-    Coordinate opCall(int bodySegment)
-    {
-        return body[bodySegment];
-    }
-
-
-    /**
-     * Getter for length
-     * Universal Function Call Syntax
-     */
-    ulong length() { return body.length; }
+    Coordinate head() { return body[0]; }
 
 
     /**
@@ -98,7 +99,7 @@ class Snake
 
 
 private:
-    int direction = Direction.init;
+    Direction direction;
     Coordinate[] body; /// The body of the snake is a continuous line of cells
     Coordinate[4] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,

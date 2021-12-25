@@ -6,12 +6,12 @@
 
 module ground;
 
-import core.sys.windows.windows;
+public import arsd.terminal;
 import std.conv;
 
 import coordinate;
 import snake;
-public import arsd.terminal;
+
 
 
 /**
@@ -23,14 +23,12 @@ public import arsd.terminal;
  */
 class Ground
 {
-    static immutable WALL = -2; /// used in the ground array to indicate a wall
-    static immutable SNAKE = -1; /// ditto
-    static immutable EMPTY = 0; /// ditto
-    static immutable FOOD = 1; /// ditto
+    enum { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD };
 
     static immutable maxSide = 100; /// maximum height / width of the ground
-    static immutable playgroundWidth = 77; /// playground is the part of the ground where the snake can move
+    static immutable playgroundWidth = 77; /// Ground where the snake can move
     static immutable playgroundHeight = 22; /// ditto
+    static immutable playgroundCente = Coordinate(playgroundWidth/2, playgroundHeight/2);
 
     invariant
     {
@@ -84,6 +82,7 @@ class Ground
         {
             ground[snkCell.x][snkCell.y] = SNAKE;
         }
+        ground[snk.head.x][snk.head.y] = SNAKE_HEAD;
     }
     unittest
     {
@@ -124,6 +123,42 @@ class Ground
         terminal.moveTo(x,y);
         terminal.writeln("\u2022");
     }
+
+
+    /**
+     * Display ground[][] on the terminal
+     */
+    void initDisplay(ref Terminal terminal)
+    {
+        updateFoodToken(terminal); // put a first food token in ground[][]
+
+        terminal.clear();
+        for( int i = 0; i <= playgroundWidth+1; ++i)
+            for(int j = 0; j <= playgroundHeight+1; ++j)
+            {
+                terminal.moveTo(i,j);
+                switch(ground[i][j])
+                {
+                    case EMPTY:
+                        terminal.write(" ");
+                        break;
+                    case WALL:
+                        terminal.write("\u25FB");
+                        break;
+                    case SNAKE:
+                        terminal.write("\u00A4");
+                        break;
+                    case SNAKE_HEAD:
+                        terminal.write("\u03A6");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        terminal.writeln();
+
+    }
+
 
 private:
     int foodCounter = 0;
