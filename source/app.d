@@ -17,56 +17,56 @@ import snake;
 
 int main()
 {
-	Ground ground = new Ground;
-	Snake snake = new Snake(ground.playgroundCenter);
-	ground.setSnakePosition(snake);
+    auto terminal = Terminal(ConsoleOutputType.linear);
+    auto input = RealTimeConsoleInput(&terminal, ConsoleInputFlags.allInputEventsWithRelease);
 
-	// Using https://code.dlang.org/packages/arsd-official%3Aterminal
-	auto terminal = Terminal(ConsoleOutputType.linear);
-	auto input = RealTimeConsoleInput(&terminal, ConsoleInputFlags.allInputEventsWithRelease);
-	ground.initDisplay(terminal);
+    Ground ground = new Ground;
+    Snake snake = new Snake(ground.playgroundCenter);
+    ground.updateSnakePosition(snake);
+    ground.initDisplay(terminal);
 
-	bool isPlaying = true;
-	while (isPlaying)
-	{
-		Direction userDirection = Direction.UNDEFINED;
+    Direction userDirection = Direction.RIGHT;
+    bool isPlaying = true;
+    while (isPlaying)
+    {
+        /*
+         * We use a stopwatch and kbhit() because the snake shall move every 500ms
+         * even if the player does not give any new direction.
+         * A player reaction time is around 200ms, allowing for a couple of input.
+         */
+        immutable sw = StopWatch(AutoStart.yes);
+        while (sw.peek.total!"msecs" < 500)
+        {
+            if (input.kbhit()) switch (input.getch())
+            {
+                case KeyboardEvent.Key.UpArrow:
+                    userDirection = Direction.UP;
+                    break;
+                case KeyboardEvent.Key.DownArrow:
+                    userDirection = Direction.DOWN;
+                    break;
+                case KeyboardEvent.Key.LeftArrow:
+                    userDirection = Direction.LEFT;
+                    break;
+                case KeyboardEvent.Key.RightArrow:
+                    userDirection = Direction.RIGHT;
+                    break;
+                case KeyboardEvent.Key.escape:
+                    isPlaying = false;
+                    break;
 
-		/*
-		 * We use a stopwatch and kbhit() because the snake shall move every 500ms
-		 * even if the player does not give any new direction.
-		 * A player reaction time is around 200ms, allowing for a couple of input.
-		 */
-		immutable sw = StopWatch(AutoStart.yes);
-		while (sw.peek.total!"msecs" < 500)
-		{
-			if (input.kbhit()) switch (input.getch())
-			{
-				case KeyboardEvent.Key.UpArrow:
-					userDirection = Direction.UP;
-					break;
-				case KeyboardEvent.Key.DownArrow:
-					userDirection = Direction.DOWN;
-					break;
-				case KeyboardEvent.Key.LeftArrow:
-					userDirection = Direction.LEFT;
-					break;
-				case KeyboardEvent.Key.RightArrow:
-					userDirection = Direction.RIGHT;
-					break;
-				case KeyboardEvent.Key.escape:
-					isPlaying = false;
-					break;
+                default:
+                    break;
+            }
 
-				default:
-					break;
-			}
+            Thread.sleep(10.msecs);
+        }
+        //writeln("snake update, direction ", userDirection, " ", sw.peek.total!"msecs");
+        ground.update(snake, userDirection);
+        ground.updateDisplay(terminal);
 
-			Thread.sleep(10.msecs);
-		}
-		writeln("snake update, direction ", userDirection, " ", sw.peek.total!"msecs");
+    }
 
-	}
-
-	return 0;
+    return 0;
 }
 

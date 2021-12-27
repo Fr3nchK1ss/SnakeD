@@ -13,7 +13,7 @@ import ground;
 
 
 /// Direction is to be used with unitMotion
-enum Direction { RIGHT, LEFT, UP, DOWN, UNDEFINED}
+enum Direction { RIGHT=0    , LEFT, UP, DOWN, UNDEFINED}
 
 
 class Snake
@@ -37,7 +37,7 @@ class Snake
 
         // Draw the starting body
         for (int i = 1; i < body.length; ++i)
-            body[i] = body[i-1] - unitMotion[direction];
+            body[i] = body[i-1] - unitMotion[m_direction];
 
     }
     unittest
@@ -85,25 +85,25 @@ class Snake
     /**
      * Update body according to user input
      */
-    void updateBody(int delay)
+    void updateBody(Direction direction)
     {
-        Coordinate[] previous = body[];
+        Coordinate[] previous = body.dup;
 
         // update head
         body[0] = body[0] + unitMotion[direction];
-    	
+
         // update remaining body
         body[1..$] = previous[0..$-1];
-
     }
 
 
 private:
-    Direction direction;
+    Direction m_direction; // TODO: necessary?
     Coordinate[] body; /// The body of the snake is a continuous line of cells
-    Coordinate[4] unitMotion = [{1,0}  /*RIGHT*/,
+    Coordinate[5] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,
                                 {0,-1} /*UP*/,
-                                {0,1}  /*DOWN*/];
+                                {0,1}  /*DOWN*/,
+                                {0,0} /*UNDEFINED*/];
 
 }

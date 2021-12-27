@@ -23,7 +23,7 @@ import snake;
  */
 class Ground
 {
-    enum { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD };
+    enum { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD, DIRTY };
 
     static immutable maxSide = 100; /// maximum height / width of the ground
     static immutable playgroundWidth = 77; /// Ground where the snake can move
@@ -74,14 +74,27 @@ class Ground
 
 
     /**
+     * Update the position of the snake according to userDirection
+     */
+    void update(Snake snk, Direction userDirection)
+    {
+        // Mark the snake cells "dirty"
+        foreach (Coordinate snkCell; snk)
+            ground[snkCell.x][snkCell.y] = DIRTY;
+
+        snk.updateBody(userDirection);
+        updateSnakePosition(snk);
+    }
+
+
+    /**
      * Register the position of the snake on the playground
      */
-    void setSnakePosition(Snake snk)
+    void updateSnakePosition(Snake snk)
     {
         foreach (Coordinate snkCell; snk)
-        {
             ground[snkCell.x][snkCell.y] = SNAKE;
-        }
+
         ground[snk.head.x][snk.head.y] = SNAKE_HEAD;
     }
     unittest
@@ -156,9 +169,35 @@ class Ground
                 }
             }
         terminal.writeln();
-
     }
 
+
+    void updateDisplay(ref Terminal terminal)
+    {
+        for( int i = 1; i <= playgroundWidth; ++i)
+            for(int j = 1; j <= playgroundHeight; ++j)
+            {
+                switch(ground[i][j])
+                {
+                    case DIRTY:
+                        terminal.moveTo(i,j);
+                        terminal.write(" ");
+                        break;
+                    case SNAKE:
+                        terminal.moveTo(i,j);
+                        terminal.write("\u00A4");
+                        break;
+                    case SNAKE_HEAD:
+                        terminal.moveTo(i,j);
+                        terminal.write("\u03A6");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        terminal.moveTo(0,0);
+        terminal.writeln();
+    }
 
 private:
     int foodCounter = 0;
