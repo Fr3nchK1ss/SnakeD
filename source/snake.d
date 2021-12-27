@@ -9,35 +9,23 @@ module snake;
 import std.conv;
 
 import coordinate;
-import ground;
 
 
 /// Direction is to be used with unitMotion
-enum Direction { RIGHT=0    , LEFT, UP, DOWN, UNDEFINED}
+enum Direction { RIGHT=0, LEFT, UP, DOWN, UNDEFINED}
 
 
 class Snake
 {
-    invariant
-    {
-        assert(body[0].x >= 0 && body[0].x < Ground.playgroundWidth);
-        assert(body[0].y >= 0 && body[0].y < Ground.playgroundHeight);
-    }
-
 
     this(Coordinate center)
-    out {
-        // The new snake must fit in the playground
-        assert(body.length <= Ground.playgroundWidth/2 - 1);
-    }
-    do
     {
         body = new Coordinate[4];
         body[0] = center;
 
         // Draw the starting body
         for (int i = 1; i < body.length; ++i)
-            body[i] = body[i-1] - unitMotion[m_direction];
+            body[i] = body[i-1] - unitMotion[Direction.RIGHT];
 
     }
     unittest
@@ -45,9 +33,8 @@ class Snake
         import std.stdio;
         writeln("** Snake ctor unittest **");
 
-        Ground g = new Ground();
-        Snake s = new Snake(g.playgroundCenter);
-        assert(s.body.length == 4 && s.direction == Direction.RIGHT);
+        Snake s = new Snake(Coordinate(10,10));
+        assert(s.body.length == 4);
         /+
         foreach_reverse (cell; s.body)
             writeln(cell);
@@ -98,7 +85,6 @@ class Snake
 
 
 private:
-    Direction m_direction; // TODO: necessary?
     Coordinate[] body; /// The body of the snake is a continuous line of cells
     Coordinate[5] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,

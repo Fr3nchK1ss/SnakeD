@@ -21,14 +21,15 @@ int main()
     auto input = RealTimeConsoleInput(&terminal, ConsoleInputFlags.allInputEventsWithRelease);
 
     Ground ground = new Ground;
-    Snake snake = new Snake(ground.playgroundCenter);
-    ground.updateSnakePosition(snake);
     ground.initDisplay(terminal);
 
     Direction userDirection = Direction.RIGHT;
     bool isPlaying = true;
     while (isPlaying)
     {
+        /// previousDirection: do not allow the snake to crawl on its own body
+        immutable previousDirection = userDirection;
+
         /*
          * We use a stopwatch and kbhit() because the snake shall move every 500ms
          * even if the player does not give any new direction.
@@ -40,16 +41,20 @@ int main()
             if (input.kbhit()) switch (input.getch())
             {
                 case KeyboardEvent.Key.UpArrow:
-                    userDirection = Direction.UP;
+                    if (previousDirection != Direction.DOWN)
+                        userDirection = Direction.UP;
                     break;
                 case KeyboardEvent.Key.DownArrow:
-                    userDirection = Direction.DOWN;
+                    if (previousDirection != Direction.UP)
+                        userDirection = Direction.DOWN;
                     break;
                 case KeyboardEvent.Key.LeftArrow:
-                    userDirection = Direction.LEFT;
+                    if (previousDirection != Direction.RIGHT)
+                        userDirection = Direction.LEFT;
                     break;
                 case KeyboardEvent.Key.RightArrow:
-                    userDirection = Direction.RIGHT;
+                    if (previousDirection != Direction.LEFT)
+                        userDirection = Direction.RIGHT;
                     break;
                 case KeyboardEvent.Key.escape:
                     isPlaying = false;
@@ -62,8 +67,8 @@ int main()
             Thread.sleep(10.msecs);
         }
         //writeln("snake update, direction ", userDirection, " ", sw.peek.total!"msecs");
-        ground.update(snake, userDirection);
-        ground.updateDisplay(terminal);
+
+        ground.update(terminal, userDirection);
 
     }
 

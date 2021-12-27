@@ -17,25 +17,21 @@ import snake;
 /**
  * Ground class
  *
- * The ground is represented by a 2d array
- *
- * Inside the ground array is the playground. Inside the playground the snake and food tokens to catch.
+ * The ground is represented by a 2d array. Inside the array is the playground area.
+ * Inside the playground the snake and food tokens to catch.
  */
 class Ground
 {
-    enum { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD, DIRTY };
+    enum { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD, DIRTY }; /// Cell type
 
     static immutable maxSide = 100; /// maximum height / width of the ground
     static immutable playgroundWidth = 77; /// Ground where the snake can move
     static immutable playgroundHeight = 22; /// ditto
-    static immutable playgroundCente = Coordinate(playgroundWidth/2, playgroundHeight/2);
+    static immutable playgroundCenter = Coordinate(playgroundWidth/2, playgroundHeight/2); ///
 
-    invariant
-    {
-        assert(playgroundWidth <= maxSide && playgroundHeight <= maxSide);
-    }
+    invariant { assert(playgroundWidth <= maxSide && playgroundHeight <= maxSide); }
 
-
+    ///
     this()
     {
         ground = 0; // as of D2, we can not initialize matrix arrays in class body
@@ -53,16 +49,9 @@ class Ground
             ground[0][i] = WALL;
             ground[playgroundWidth + 1][i] = WALL;
         }
-    }
 
-
-    /**
-     * Return the center of the playground
-     * UFCS name
-     */
-    Coordinate playgroundCenter()
-    {
-        return Coordinate(playgroundWidth/2, playgroundHeight/2);
+        updateSnakePosition(); // Put the snake on the ground
+        updateFoodToken(); // Put a first food token on ground
     }
 
 
@@ -74,38 +63,32 @@ class Ground
 
 
     /**
-     * Update the position of the snake according to userDirection
+     * Record the position of the snake in the 2d ground array
      */
-    void update(Snake snk, Direction userDirection)
+    void updateSnakePosition()
+    out
     {
-        // Mark the snake cells "dirty"
-        foreach (Coordinate snkCell; snk)
-            ground[snkCell.x][snkCell.y] = DIRTY;
-
-        snk.updateBody(userDirection);
-        updateSnakePosition(snk);
+        foreach (Coordinate snkCell; snake)
+        {
+            // Error if snake reaches outside the WALL
+            assert(snkCell.x > 0 && snkCell.x < playgroundWidth+2);
+            assert(snkCell.y > 0 && snkCell.y < playgroundHeight+2);
+        }
     }
-
-
-    /**
-     * Register the position of the snake on the playground
-     */
-    void updateSnakePosition(Snake snk)
+    do
     {
-        foreach (Coordinate snkCell; snk)
+        foreach (Coordinate snkCell; snake)
             ground[snkCell.x][snkCell.y] = SNAKE;
 
-        ground[snk.head.x][snk.head.y] = SNAKE_HEAD;
+        ground[snake.head.x][snake.head.y] = SNAKE_HEAD;
     }
     unittest
     {
         import std.stdio;
         writeln("** Ground setSnakePosition unittest **");
 
-        Ground g = new Ground();
-        Snake s = new Snake(g.playgroundCenter);
-        g.setSnakePosition(s);
-        assert(g.ground[g.playgroundCenter.x][g.playgroundCenter.y] == SNAKE_HEAD);
+        Ground g = new Ground;
+        assert(g.ground[playgroundCenter.x][playgroundCenter.y] == SNAKE_HEAD);
         /+
         for( int x = 0; x < playgroundWidth; ++x)
             for(int y = 0; y < playgroundHeight; ++y)
@@ -116,9 +99,32 @@ class Ground
 
 
     /**
-     * Put a food token at random on the playground
+     * Update the position of the snake according to user input
+     *
+     * Only update the 2d array, not the terminal
      */
-    void updateFoodToken(ref Terminal terminal)
+    void updateSnakePosition(Direction userDirection)
+    {
+        // Mark the snake cells "dirty"
+        foreach (Coordinate snkCell; snake)
+            ground[snkCell.x][snkCell.y] = DIRTY;
+
+        snake.updateBody(userDirection);
+        updateSnakePosition(); // Draw new snake
+    }
+
+
+    /**
+     * Put a food token at random on the playground
+     *
+     * Only update the 2d array, not the terminal
+     */
+    void updateFoodToken()
+    out {
+        assert(foodTokenPos.x <= playgroundWidth
+                && foodTokenPos.y <= playgroundHeight);
+    }
+    do
     {
         import std.random;
 
@@ -133,74 +139,96 @@ class Ground
         ground[x][y] = FOOD;
         foodCounter++;
 
-        terminal.moveTo(x,y);
-        terminal.writeln("\u2022");
+        foodTokenPos = Coordinate(x,y);
     }
 
 
     /**
-     * Display ground[][] on the terminal
+     * Display initial ground[][] data in the terminal
+     *
      */
-    void initDisplay(ref Terminal terminal)
+    void initDisplay(ref Terminal term)
     {
-        updateFoodToken(terminal); // put a first food token in ground[][]
-
-        terminal.clear();
+        term.clear();
         for( int i = 0; i <= playgroundWidth+1; ++i)
             for(int j = 0; j <= playgroundHeight+1; ++j)
             {
-                terminal.moveTo(i,j);
+                term.moveTo(i,j);
                 switch(ground[i][j])
                 {
                     case EMPTY:
-                        terminal.write(" ");
+                        term.write(" ");
                         break;
                     case WALL:
-                        terminal.write("\u25FB");
+                        term.write("\u25FB");
                         break;
                     case SNAKE:
-                        terminal.write("\u00A4");
+                        term.write("\u00A4");
                         break;
                     case SNAKE_HEAD:
-                        terminal.write("\u03A6");
+                        term.write("\u03A6");
+                        break;
+                    case FOOD:
+                        term.write("\u2022");
                         break;
                     default:
                         break;
                 }
             }
-        terminal.writeln();
+        term.writeln();
     }
 
 
-    void updateDisplay(ref Terminal terminal)
+    /**
+     * Update the terminal according to ground[][] data and user input
+     *
+     * Game loop main func
+     */
+    void update(ref Terminal term, Direction userDirection)
     {
+        updateSnakePosition(userDirection);
+        if( snake.head == foodTokenPos )
+        {
+            import std.stdio;
+            write("I love mice!");
+            // snake.grow()
+        }
+        // else if snake hits the wall
+        // else if snake eats itself
+
         for( int i = 1; i <= playgroundWidth; ++i)
             for(int j = 1; j <= playgroundHeight; ++j)
             {
                 switch(ground[i][j])
                 {
                     case DIRTY:
-                        terminal.moveTo(i,j);
-                        terminal.write(" ");
+                        term.moveTo(i,j);
+                        term.write(" ");
                         break;
                     case SNAKE:
-                        terminal.moveTo(i,j);
-                        terminal.write("\u00A4");
+                        term.moveTo(i,j);
+                        term.write("\u00A4");
                         break;
                     case SNAKE_HEAD:
-                        terminal.moveTo(i,j);
-                        terminal.write("\u03A6");
+                        term.moveTo(i,j);
+                        term.write("\u03A6");
+                        break;
+                    case FOOD:
+                        term.moveTo(i,j);
+                        term.write("\u2022");
                         break;
                     default:
                         break;
                 }
             }
-        terminal.moveTo(0,0);
-        terminal.writeln();
+        term.moveTo(0,playgroundHeight+2);
+        term.writeln();
     }
 
 private:
-    int foodCounter = 0;
     int[maxSide][maxSide] ground; /// usage: ground[column][line]
+    int foodCounter = 0;
 
+    Snake snake = new Snake(playgroundCenter);
+    Coordinate foodTokenPos;
 }
