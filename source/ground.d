@@ -116,7 +116,7 @@ class Ground
         switch (ground[snake.head.x][snake.head.y])
         {
             case WALL:  // Snake hit the wall
-            case DIRTY: // Snake hit its won body
+            case DIRTY: //TODO Snake hit its won body
                 return false;
             case FOOD:
                 snake.growBody();
@@ -156,7 +156,7 @@ class Ground
         ground[x][y] = FOOD;
         foodCounter++;
 
-        return Coordinate(x,y); // return value to be used in contract
+        return Coordinate(x,y); // to be used in contract
     }
 
 
@@ -244,7 +244,7 @@ class Ground
 
 
 private:
-    enum CellType { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD, DIRTY }; /// Cell type
+    enum CellType { EMPTY, WALL, SNAKE, SNAKE_HEAD, FOOD, DIRTY }; /// Named enum to enforce type for ground[][]
     alias EMPTY = CellType.EMPTY;
     alias WALL = CellType.WALL;
     alias SNAKE = CellType.SNAKE;

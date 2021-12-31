@@ -82,7 +82,7 @@ class Snake
     in {
         // The snake must not backtrack on itself
         assert(body[0] + unitMotion[direction] != body[1]);
-        // The snake must not crawl over itself
+        // The snake must not crawl over itself TODO
         //foreach ( const cell; body )
         //    assert(body[0] + unitMotion[direction] != cell);
     }
