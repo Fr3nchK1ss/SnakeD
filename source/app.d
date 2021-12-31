@@ -23,6 +23,13 @@ int main()
     Ground ground = new Ground;
     ground.initDisplay(terminal);
 
+    void gameover()
+    {
+        terminal.moveTo(ground.playgroundBottom.x, ground.playgroundBottom.y);
+        terminal.writeln("***** GAME OVER! *****");
+        terminal.writeln("  Score : ", ground.foodCount);
+    }
+
     Direction userDirection = Direction.RIGHT;
     bool isPlaying = true;
     while (isPlaying)
@@ -31,12 +38,12 @@ int main()
         immutable previousDirection = userDirection;
 
         /*
-         * We use a stopwatch and kbhit() because the snake shall move every 500ms
+         * We use a stopwatch and kbhit() because the snake shall move every 300ms
          * even if the player does not give any new direction.
-         * A player reaction time is around 200ms, allowing for a couple of input.
+         * A player reaction time is around 200ms
          */
         immutable sw = StopWatch(AutoStart.yes);
-        while (sw.peek.total!"msecs" < 500)
+        while (sw.peek.total!"msecs" < 300)
         {
             if (input.kbhit()) switch (input.getch())
             {
@@ -68,7 +75,11 @@ int main()
         }
         //writeln("snake update, direction ", userDirection, " ", sw.peek.total!"msecs");
 
-        ground.update(terminal, userDirection);
+        if (!ground.update(terminal, userDirection))
+        {
+            gameover();
+            isPlaying = false;
+        }
 
     }
 
