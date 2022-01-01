@@ -23,15 +23,22 @@ int main()
     Ground ground = new Ground;
     ground.initDisplay(terminal);
 
-    void gameover()
+    Direction userDirection = Direction.RIGHT;
+    bool isPlaying = true;
+
+    void displayScore()
     {
         terminal.moveTo(ground.playgroundBottom.x, ground.playgroundBottom.y);
-        terminal.writeln("***** GAME OVER! *****");
         terminal.writeln("  Score : ", ground.foodCount);
     }
 
-    Direction userDirection = Direction.RIGHT;
-    bool isPlaying = true;
+    void gameover()
+    {
+        displayScore;
+        terminal.writeln("***** GAME OVER! *****");
+        isPlaying = false;
+    }
+
     while (isPlaying)
     {
         /// previousDirection: do not allow the snake to crawl on its own body
@@ -75,11 +82,10 @@ int main()
         }
         //writeln("snake update, direction ", userDirection, " ", sw.peek.total!"msecs");
 
-        if (!ground.update(terminal, userDirection))
-        {
-            gameover();
-            isPlaying = false;
-        }
+        if (ground.update(terminal, userDirection))
+            displayScore;
+        else
+            gameover;
 
     }
 

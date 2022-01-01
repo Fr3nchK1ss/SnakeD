@@ -21,6 +21,7 @@ struct Coordinate
     }
 
 
+    ///
     bool opEquals(const Coordinate c) const
     {
         return x == c.x && y == c.y;
@@ -32,6 +33,7 @@ struct Coordinate
     }
 
 
+    ///
     Coordinate opBinary(string op)(const Coordinate rhs) const
     {
         static if (op == "+")

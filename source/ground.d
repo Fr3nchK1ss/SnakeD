@@ -28,16 +28,16 @@ class Ground
     ///
     this()
     {
-        ground = 0; // as of D2, we can not initialize matrix arrays in class body
+        ground = EMPTY; // as of D2, we can not initialize matrix arrays in class body
 
-        for (int i = 0; i <= playgroundWidth; ++i)
+        foreach (i; 0 .. playgroundWidth+1)
         {
             //top & bottom wall
             ground[i][0] = WALL;
             ground[i][playgroundHeight] = WALL;
         }
 
-        for (int i = 0; i <= playgroundHeight+1; ++i)
+        foreach (i; 0 .. playgroundHeight+1)
         {
             //right & left wall
             ground[0][i] = WALL;
@@ -57,20 +57,21 @@ class Ground
 
 
     /**
-     * Return the number of food tokens consumed minus one
+     * Return the first line below the playground
      * UFCS name
      */
     Coordinate playgroundBottom() { return Coordinate(0, playgroundHeight+1); }
 
+
     /**
-     * Record the position of the snake in the 2d ground array
+     * Record the position of the snake in the ground[][] array
      */
     void updateSnakePosition()
     out
     {
         foreach (Coordinate snkCell; snake)
         {
-            // Error if snake reaches outside the WALL
+            // Snake must always stay inside the playground
             assert(snkCell.x >= 0 && snkCell.x <= playgroundWidth);
             assert(snkCell.y >= 0 && snkCell.y <= playgroundHeight);
         }
@@ -79,13 +80,12 @@ class Ground
     {
         foreach (Coordinate snkCell; snake)
             ground[snkCell.x][snkCell.y] = SNAKE;
-
         ground[snake.head.x][snake.head.y] = SNAKE_HEAD;
     }
     unittest
     {
         import std.stdio;
-        writeln("** [Ground] setSnakePosition() unittest **");
+        writeln("** [Ground] updateSnakePosition() unittest **");
 
         Ground g = new Ground;
         assert(g.ground[playgroundCenter.x][playgroundCenter.y] == SNAKE_HEAD);
@@ -101,24 +101,23 @@ class Ground
     /**
      * Update the position of the snake according to user input
      *
-     * Only update the ground[][] 2d array, not the display
+     * Only update the ground[][] array, not the display.
      * Returns: False if the snake hit a wall or itself, True otherwise
      */
     bool updateSnakePosition(Direction userDirection)
     {
-        // Mark the snake cells "dirty"
+        // Mark the current snake cells as dirty
         foreach (Coordinate snkCell; snake)
             ground[snkCell.x][snkCell.y] = DIRTY;
 
-        //TODO should be placed at beginnig of func?
-        snake.updateBody(userDirection); // TODO should return false if eat itself
+        if (!snake.updateBody(userDirection))
+            return false; // Snake hit itself
 
         switch (ground[snake.head.x][snake.head.y])
         {
-            case WALL:  // Snake hit the wall
-            case DIRTY: //TODO Snake hit its won body
+            case WALL:  // Snake hit the wall :(
                 return false;
-            case FOOD:
+            case FOOD:  // Snake ate food :)
                 snake.growBody();
                 updateSnakePosition();
                 updateFoodToken();
@@ -129,12 +128,30 @@ class Ground
 
         return true;
     }
+    unittest
+    {
+        import std.stdio;
+        writeln("** [Ground] updateSnakePosition(Direction) unittest **");
+
+        Ground g = new Ground;
+        // Free range snake
+        assert(g.updateSnakePosition(Direction.UP));
+
+        // put a FOOD token in front of snake head
+        g.ground[g.snake.head.x][g.snake.head.y - 1] = FOOD;
+        assert(g.updateSnakePosition(Direction.UP)); // Move to food
+        assert(g.foodCount == 1);
+
+        // Put a WALL in front of snake head
+        g.ground[g.snake.head.x+1][g.snake.head.y] = WALL;
+        assert(!g.updateSnakePosition(Direction.RIGHT)); // Move into wall
+    }
 
 
     /**
      * Put a food token at random on the playground
      *
-     * Only update the ground[][] 2d array, not the display
+     * Only update the ground[][] array, not the display
      */
     Coordinate updateFoodToken()
     out (foodTokenPos) {
@@ -158,6 +175,36 @@ class Ground
 
         return Coordinate(x,y); // to be used in contract
     }
+    unittest
+    {
+        import std.stdio;
+        writeln("** [Ground] updateFoodToken() unittest **");
+
+        Ground g = new Ground;
+        void findOneFood()
+        {
+            int count = 0;
+            foreach (i; 0 .. playgroundWidth)
+                foreach (j; 0 .. playgroundHeight)
+                {
+                    if(g.ground[i][j] == FOOD)
+                    {
+                        //writeln ("FOOD at (", i, ",", j, ")");
+                        count++;
+                    }
+                }
+            assert (count == 1);
+        }
+
+        findOneFood(); // Look for the random FOOD created in Ground ctor
+
+        foreach (i; 0 .. playgroundWidth+1)
+            foreach (j; 0 .. playgroundHeight+1)
+                g.ground[i][j] = EMPTY;
+        g.updateFoodToken();
+        findOneFood();
+
+    }
 
 
     /**
@@ -170,8 +217,8 @@ class Ground
     void initDisplay(ref Terminal term)
     {
         term.clear();
-        for( int i = 0; i <= playgroundWidth; ++i)
-            for(int j = 0; j <= playgroundHeight; ++j)
+        foreach (i; 0 .. playgroundWidth+1)
+            foreach (j; 0 .. playgroundHeight+1)
             {
                 term.moveTo(i,j);
                 switch(ground[i][j])
@@ -210,8 +257,8 @@ class Ground
         if( !updateSnakePosition(userDirection) )
             return false;
 
-        for( int i = 0; i <= playgroundWidth; ++i)
-            for(int j = 0; j <= playgroundHeight; ++j)
+        foreach (i; 0 .. playgroundWidth+1)
+            foreach (j; 0 .. playgroundHeight+1)
             {
                 switch(ground[i][j])
                 {
