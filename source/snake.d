@@ -24,8 +24,6 @@ class Snake
     this(Coordinate center)
     do
     {
-        body = new Coordinate[startingLength];
-
         body[0] = center; // Head
         foreach (i; 1 .. cast(int)body.length)
             body[i] = body[i-1] - unitMotion[Direction.RIGHT];
@@ -148,10 +146,12 @@ class Snake
 
 
 private:
-    Coordinate[] body; /// The body of the snake is a continuous line of cells
+     /// The body of the snake is a continuous line of cells
     immutable startingLength = 4;
+    Coordinate[] body = new Coordinate[startingLength];
     Coordinate previousTail = Coordinate(-1, -1);/// Variable needed for the snake growth
-    Coordinate[5] unitMotion = [{1,0}  /*RIGHT*/,
+
+    Vector2D[5] unitMotion = [{1,0}  /*RIGHT*/,
                                 {-1,0} /*LEFT*/,
                                 {0,-1} /*UP*/,
                                 {0,1}  /*DOWN*/];

@@ -6,6 +6,17 @@
 module coordinate;
 
 
+
+/**
+ * Define a typical 2D vector
+ */
+struct Vector2D
+{
+    int x; ///
+    int y; ///
+}
+
+
 /**
  * Define a typical x / y point
  */
@@ -20,7 +31,6 @@ struct Coordinate
         assert ( 0 <= x && 0 <= y);
     }
 
-
     ///
     bool opEquals(const Coordinate c) const
     {
@@ -34,7 +44,7 @@ struct Coordinate
 
 
     ///
-    Coordinate opBinary(string op)(const Coordinate rhs) const
+    Coordinate opBinary(string op)(const Vector2D rhs) const
     {
         static if (op == "+")
         {
@@ -50,10 +60,10 @@ struct Coordinate
     }
     unittest
     {
-        immutable Coordinate coord11 = {1, 1};
+        immutable Vector2D vec11 = {1,1};
         immutable Coordinate coord22 = {2, 2};
 
-        assert( coord22 + coord11 == Coordinate(3, 3), "Coordinate op+ does not yield expected result!");
-        assert( coord22 - coord11 == coord11, "Coordinate op- does not yield expected result!");
+        assert( coord22 + vec11 == Coordinate(3, 3), "Coordinate op+ does not yield expected result!");
+        assert( coord22 - vec11 == Coordinate(1, 1), "Coordinate op- does not yield expected result!");
     }
 }

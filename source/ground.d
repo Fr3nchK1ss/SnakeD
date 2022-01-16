@@ -23,25 +23,25 @@ import snake;
 class Ground
 {
 
-    invariant { assert(playgroundWidth <= maxSide && playgroundHeight <= maxSide); }
+    static assert(playgroundWidth <= maxSide && playgroundHeight <= maxSide);
 
     ///
     this()
     {
         ground = EMPTY; // as of D2, we can not initialize matrix arrays in class body
 
-        foreach (i; 0 .. playgroundWidth+1)
+        foreach (i; 0 .. playgroundWidth)
         {
             //top & bottom wall
             ground[i][0] = WALL;
-            ground[i][playgroundHeight] = WALL;
+            ground[i][playgroundHeight-1] = WALL;
         }
 
-        foreach (i; 0 .. playgroundHeight+1)
+        foreach (i; 0 .. playgroundHeight)
         {
             //right & left wall
             ground[0][i] = WALL;
-            ground[playgroundWidth][i] = WALL;
+            ground[playgroundWidth-1][i] = WALL;
         }
 
         updateSnakePosition(); // Put the snake on the ground
@@ -54,6 +54,19 @@ class Ground
      * UFCS name
      */
     int foodCount() { return foodCounter-1; }
+
+
+    /**
+     * Reset all cells to EMPTY except for walls
+     *
+     * Used in contracts / debug
+     */
+    void clearGround()
+    {
+        foreach (i; 1 .. playgroundWidth-1)
+            foreach (j; 1 .. playgroundHeight-1)
+                ground[i][j] = EMPTY;
+    }
 
 
     /**
@@ -72,8 +85,8 @@ class Ground
         foreach (Coordinate snkCell; snake)
         {
             // Snake must always stay inside the playground
-            assert(snkCell.x >= 0 && snkCell.x <= playgroundWidth);
-            assert(snkCell.y >= 0 && snkCell.y <= playgroundHeight);
+            assert(snkCell.x > 0 && snkCell.x < playgroundWidth);
+            assert(snkCell.y > 0 && snkCell.y < playgroundHeight);
         }
     }
     do
@@ -90,10 +103,10 @@ class Ground
         Ground g = new Ground;
         assert(g.ground[playgroundCenter.x][playgroundCenter.y] == SNAKE_HEAD);
         /+
-        for( int x = 1; x < playgroundWidth; ++x)
-            for(int y = 1; y < playgroundHeight; ++y)
-                if ( g.ground[x][y] == SNAKE )
-                    writeln("snake cell at (", x, ",", y, ")");
+         foreach (i; 0 .. playgroundWidth)
+            foreach (j; 0 .. playgroundHeight)
+                if ( g.ground[i][j] == SNAKE )
+                    writeln("snake cell at (", i, ",", j, ")");
         +/
     }
 
@@ -117,7 +130,7 @@ class Ground
         {
             case WALL:  // Snake hit the wall :(
                 return false;
-            case FOOD:  // Snake ate food :)
+            case FOOD:  // Snake ate the food :)
                 snake.growBody();
                 updateSnakePosition();
                 updateFoodToken();
@@ -140,7 +153,7 @@ class Ground
         // put a FOOD token in front of snake head
         g.ground[g.snake.head.x][g.snake.head.y - 1] = FOOD;
         assert(g.updateSnakePosition(Direction.UP)); // Move to food
-        assert(g.foodCount == 1);
+        assert(g.foodCount == 1, "wrong food count!"); // assert food eaten
 
         // Put a WALL in front of snake head
         g.ground[g.snake.head.x+1][g.snake.head.y] = WALL;
@@ -154,6 +167,17 @@ class Ground
      * Only update the ground[][] array, not the display
      */
     Coordinate updateFoodToken()
+    in {
+        int count=0;
+
+        // Check the exit of the while loop present in the function body
+        foreach (i; 0 .. playgroundWidth)
+            foreach (j; 0 .. playgroundHeight)
+                if(ground[i][j] == EMPTY)
+                    count++;
+
+        assert (count > 0, "Playground full!");
+    }
     out (foodTokenPos) {
         assert(foodTokenPos.x > 0 && foodTokenPos.x < playgroundWidth
                 && foodTokenPos.y > 0 && foodTokenPos.y < playgroundHeight);
@@ -181,7 +205,11 @@ class Ground
         writeln("** [Ground] updateFoodToken() unittest **");
 
         Ground g = new Ground;
-        void findOneFood()
+
+        /**
+         * Find exactly one food or return false
+         */
+        bool findOneFood()
         {
             int count = 0;
             foreach (i; 0 .. playgroundWidth)
@@ -193,17 +221,27 @@ class Ground
                         count++;
                     }
                 }
-            assert (count == 1);
+
+            // There is a maximum of one food at any time on the playground
+            if (count == 1) return true;
+
+            return false;
         }
 
-        findOneFood(); // Look for the random FOOD created in Ground ctor
+        // Look for the FOOD created in Ground ctor
+        assert( findOneFood() );
 
-        foreach (i; 0 .. playgroundWidth+1)
-            foreach (j; 0 .. playgroundHeight+1)
-                g.ground[i][j] = EMPTY;
+        // Simulate food eaten by snake
+        g.clearGround();
         g.updateFoodToken();
-        findOneFood();
+        assert( findOneFood() );
 
+        // Stress test the "in" and "out" contracts
+        foreach (i; 0 .. 1000)
+        {
+            g.clearGround();
+            g.updateFoodToken();
+        }
     }
 
 
@@ -217,8 +255,8 @@ class Ground
     void initDisplay(ref Terminal term)
     {
         term.clear();
-        foreach (i; 0 .. playgroundWidth+1)
-            foreach (j; 0 .. playgroundHeight+1)
+        foreach (i; 0 .. playgroundWidth)
+            foreach (j; 0 .. playgroundHeight)
             {
                 term.moveTo(i,j);
                 switch(ground[i][j])
@@ -239,6 +277,7 @@ class Ground
                         term.write("\u2022");
                         break;
                     default:
+                        //term.write("?")
                         break;
                 }
             }
@@ -257,8 +296,8 @@ class Ground
         if( !updateSnakePosition(userDirection) )
             return false;
 
-        foreach (i; 0 .. playgroundWidth+1)
-            foreach (j; 0 .. playgroundHeight+1)
+        foreach (i; 0 .. playgroundWidth)
+            foreach (j; 0 .. playgroundHeight)
             {
                 switch(ground[i][j])
                 {
@@ -300,8 +339,8 @@ private:
     alias DIRTY = CellType.DIRTY;
 
     static immutable maxSide = 100; /// maximum height / width of the ground
-    static immutable playgroundWidth = 47; /// Ground where the snake can move
-    static immutable playgroundHeight = 22; /// ditto
+    static immutable playgroundWidth = 20; /// Ground where the snake can move
+    static immutable playgroundHeight = 20; /// ditto
     static immutable playgroundCenter = Coordinate(playgroundWidth/2, playgroundHeight/2); ///
 
     CellType [maxSide][maxSide] ground; /// usage: ground[line][column]
