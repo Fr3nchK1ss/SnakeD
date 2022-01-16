@@ -25,6 +25,7 @@ int main()
 
     Direction userDirection = Direction.RIGHT;
     bool isPlaying = true;
+    bool isPause = false;
 
     void displayScore()
     {
@@ -70,6 +71,9 @@ int main()
                     if (previousDirection != Direction.LEFT)
                         userDirection = Direction.RIGHT;
                     break;
+                case KeyboardEvent.Key.ScrollLock :
+                    isPause = !isPause;
+                    break;
                 case KeyboardEvent.Key.escape:
                     isPlaying = false;
                     break;
@@ -81,6 +85,9 @@ int main()
             Thread.sleep(10.msecs);
         }
         //writeln("snake update, direction ", userDirection, " ", sw.peek.total!"msecs");
+
+        if (isPause)
+            continue;
 
         if (ground.update(terminal, userDirection))
             displayScore;
