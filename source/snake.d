@@ -1,6 +1,7 @@
 /**
  * Authors: Fr3nchk1ss
  * Inspired by https://thepoorengineer.com/en/snake-cplusplus/
+ * Review Ali Cehreli
  * Date: 10/2021
  */
 
@@ -20,9 +21,9 @@ enum Direction { RIGHT, LEFT, UP, DOWN}
  */
 class Snake
 {
+
     ///
     this(Coordinate center)
-    do
     {
         body[0] = center; // Head
         foreach (i; 1 .. cast(int)body.length)
@@ -73,11 +74,7 @@ class Snake
      * Move body according to user input
      */
     bool updateBody(Direction direction)
-    in {
-        // The snake shall not backtrack on itself
-        assert(body[0] + unitMotion[direction] != body[1]);
-    }
-    do
+    in (!isBackTracking(direction), "Snake shall not backtrack on its own body")
     {
         immutable Coordinate newHead = body[0] + unitMotion[direction];
 
@@ -101,15 +98,18 @@ class Snake
         import std.stdio;
         writeln("** [Snake] updateBody() unittest **");
         Snake s = new Snake(Coordinate(10,10));
-        assert(s.startingLength <= 10); // hardcoded
 
-        s.updateBody(Direction.DOWN);
-        assert(s.previousTail == Coordinate(10-(s.startingLength-1),10));
-
+        s.updateBody(Direction.DOWN); // simple DOWN motion
+        assert(s.previousTail == Coordinate(10-(s.startingLength-1),10)); // Tail saved properly
         assert(s.body.length == s.startingLength);  // Length unchanged
         assert(s.head == Coordinate(10, 10+1));     // Head moved down
-        foreach (i; 1 .. cast(int)s.body.length)    // Remaining body translated by 1
+        foreach (i; 1 .. cast(int)s.body.length)    // Remaining body translated by 1 unit
             assert(s.body[i] == Coordinate(10+1-i, 10));
+
+        // Test "in" contract, moving head to previous position == UP
+        /+
+        s.updateBody(Direction.UP); // expected to fail
+        +/
     }
 
 
@@ -119,11 +119,7 @@ class Snake
      * Called if a food token has been eaten
      */
     void growBody()
-    in {
-        // updateBody() must be called a first time before any call to growBody()
-        assert(previousTail != Coordinate(-1, -1));
-    }
-    do
+    in (hasMovedOnce, "Snake must have moved once for the body to grow")
     {
         body.length += 1;
         body[$-1] = previousTail;
@@ -156,4 +152,25 @@ private:
                                 {0,-1} /*UP*/,
                                 {0,1}  /*DOWN*/];
 
+    /**
+     * Contract function
+     * The last user-given direction has the snake backtrack on itself
+     *
+     * Returns: true if the snake's head is going back to its previous position
+     */
+    bool isBackTracking(Direction direction)
+    {
+        return body[0] + unitMotion[direction] == body[1];
+    }
+
+
+    /**
+     * Contract function
+     *
+     * Returns: true if the snake has moved once
+     */
+    bool hasMovedOnce()
+    {
+        return previousTail != Coordinate(-1, -1);
+    }
 }

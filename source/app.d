@@ -17,42 +17,46 @@ import snake;
 
 int main()
 {
-    auto terminal = Terminal(ConsoleOutputType.linear);
+    auto terminal = Terminal(ConsoleOutputType.linear); /// using arsd module
     auto input = RealTimeConsoleInput(&terminal, ConsoleInputFlags.allInputEventsWithRelease);
 
-    Ground ground = new Ground;
+    Ground ground = new Ground; ///
     ground.initDisplay(terminal);
 
-    Direction userDirection = Direction.RIGHT;
-    bool isPlaying = true;
-    bool isPause = false;
+    Direction userDirection = Direction.RIGHT; /// Snake starts facing East
+    bool isPlaying = true; /// Game on!
+    bool isPause = false; ///
 
+
+    /// displayScore delegate
     void displayScore()
     {
         terminal.moveTo(ground.playgroundBottom.x, ground.playgroundBottom.y);
         terminal.writeln("  Score : ", ground.foodCount);
     }
 
-    void gameover()
+    /// gameOver delegate
+    void gameOver()
     {
         displayScore;
         terminal.writeln("***** GAME OVER! *****");
         isPlaying = false;
     }
 
+    /// game loop
     while (isPlaying)
     {
         /// previousDirection: do not allow the snake to crawl on its own body
         immutable previousDirection = userDirection;
 
-        /*
-         * We use a stopwatch and kbhit() because the snake shall move every 300ms
-         * even if the player does not give any new direction.
-         * A player reaction time is around 200ms
-         */
         immutable sw = StopWatch(AutoStart.yes);
         while (sw.peek.total!"msecs" < 300)
         {
+            /*
+             * We use a stopwatch and kbhit() because the snake shall move every 300ms
+             * even if the player does not give any new direction.
+             * A player reaction time is around 200ms
+             */
             if (input.kbhit()) switch (input.getch())
             {
                 case KeyboardEvent.Key.UpArrow:
@@ -92,7 +96,7 @@ int main()
         if (ground.update(terminal, userDirection))
             displayScore;
         else
-            gameover;
+            gameOver;
 
     }
 

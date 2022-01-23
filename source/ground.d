@@ -1,6 +1,7 @@
 /**
  * Authors: Fr3nchk1ss
  * Inspired by https://thepoorengineer.com/en/snake-cplusplus/
+ * Review Ali Cehreli
  * Date: 10/2021
  */
 
@@ -28,7 +29,7 @@ class Ground
     ///
     this()
     {
-        ground = EMPTY; // as of D2, we can not initialize matrix arrays in class body
+        ground = EMPTY; // as of D2.098, we can not initialize matrix arrays in class body
 
         foreach (i; 0 .. playgroundWidth)
         {
@@ -80,16 +81,7 @@ class Ground
      * Record the position of the snake in the ground[][] array
      */
     void updateSnakePosition()
-    out
-    {
-        foreach (Coordinate snkCell; snake)
-        {
-            // Snake must always stay inside the playground
-            assert(snkCell.x > 0 && snkCell.x < playgroundWidth);
-            assert(snkCell.y > 0 && snkCell.y < playgroundHeight);
-        }
-    }
-    do
+    out (;isSnakeInsidePlayground, "The snake went outside the playground!")
     {
         foreach (Coordinate snkCell; snake)
             ground[snkCell.x][snkCell.y] = SNAKE;
@@ -167,22 +159,11 @@ class Ground
      * Only update the ground[][] array, not the display
      */
     Coordinate updateFoodToken()
-    in {
-        int count=0;
-
-        // Check the exit of the while loop present in the function body
-        foreach (i; 0 .. playgroundWidth)
-            foreach (j; 0 .. playgroundHeight)
-                if(ground[i][j] == EMPTY)
-                    count++;
-
-        assert (count > 0, "Playground full!");
-    }
-    out (foodTokenPos) {
-        assert(foodTokenPos.x > 0 && foodTokenPos.x < playgroundWidth
-                && foodTokenPos.y > 0 && foodTokenPos.y < playgroundHeight);
-    }
-    do
+    in (hasOneEmptyCell, "Ground has no more empty cell!")
+    out (foodTokenPos; foodTokenPos.x > 0
+                        && foodTokenPos.x < playgroundWidth
+                        && foodTokenPos.y > 0
+                        && foodTokenPos.y < playgroundHeight, "The food token is outsited the playground!")
     {
         import std.random;
 
@@ -214,13 +195,11 @@ class Ground
             int count = 0;
             foreach (i; 0 .. playgroundWidth)
                 foreach (j; 0 .. playgroundHeight)
-                {
                     if(g.ground[i][j] == FOOD)
                     {
                         //writeln ("FOOD at (", i, ",", j, ")");
                         count++;
                     }
-                }
 
             // There is a maximum of one food at any time on the playground
             if (count == 1) return true;
@@ -347,4 +326,35 @@ private:
     int foodCounter = 0;
 
     Snake snake = new Snake(playgroundCenter);
+
+
+    /**
+     * Contract function
+     */
+    bool isSnakeInsidePlayground()
+    {
+        foreach (Coordinate snkCell; snake)
+            if ( ! (snkCell.x > 0
+                && snkCell.x < playgroundWidth
+                && snkCell.y > 0
+                && snkCell.y < playgroundHeight))
+            return false;
+
+        return true;
+    }
+
+
+    /**
+     * Contract function
+     */
+    bool hasOneEmptyCell()
+    {
+        foreach (i; 0 .. playgroundWidth)
+            foreach (j; 0 .. playgroundHeight)
+                if(ground[i][j] == EMPTY)
+                    return true;
+
+        return false;
+    }
+
 }
