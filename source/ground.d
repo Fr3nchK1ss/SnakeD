@@ -318,7 +318,7 @@ private:
     alias DIRTY = CellType.DIRTY;
 
     static immutable maxSide = 100; /// maximum height / width of the ground
-    static immutable playgroundWidth = 20; /// Ground where the snake can move
+    static immutable playgroundWidth = 60; /// Ground where the snake can move
     static immutable playgroundHeight = 20; /// ditto
     static immutable playgroundCenter = Coordinate(playgroundWidth/2, playgroundHeight/2); ///
 
