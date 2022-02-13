@@ -3,7 +3,7 @@
 SnakeD is not "yet another snake game", it is a study project to show off D  
 contract programming (CP) capabilities. The goal is too verify if D contract  
 programming features can cover strong design requirements. Here, those  
-requirements are generated from the aeronautic industry guideline DO-178c.  
+requirements are generated from the aeronautical industry guideline DO-178c.  
 
 ![Screenshot](https://raw.githubusercontent.com/Fr3nchK1ss/SnakeD/master/screenshot.png)
 
@@ -37,7 +37,18 @@ requirements are generated from the aeronautic industry guideline DO-178c.
 
 ## Current status
 
-The project is still in progress, at step 6.  
+The project is finished. See POST-MORTEM.md
   
+## How to run
 
+Install the dmd environment. Then on Linux or Windows:  
+```dub run``` 
+
+Up, down, right, left: **arrow keys**  
+Pause the game: **scroll lock**  
+Exit the game: **Esc**  
+  
+On Linux, the terminal is updated only when you press a key, so even if the  
+snake moves by itself, keep pressing arrows in the direction you want to go.  
+You will understand what I mean when testing the game.  
   
