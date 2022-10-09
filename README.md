@@ -1,4 +1,4 @@
-# SnakeD ![D](https://github.com/Fr3nchK1ss/SnakeD/blob/master/.github/workflows/d.yml/badge.svg]
+# SnakeD ![D](https://github.com/Fr3nchK1ss/SnakeD/blob/master/.github/workflows/d.yml/badge.svg)
 
 SnakeD is not "yet another snake game", it is a study project to show off D  
 contract programming (CP) capabilities. The goal is too verify if D contract  
